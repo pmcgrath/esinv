@@ -1,0 +1,15 @@
+# bin and obj directories at any depth
+bin/
+obj/
+
+# Rateset sample files
+test/ccs.common.rate.ut/datafiles/*_rateset_*.txt
+
+# Visual studio files
+*.sln.DotSettings.user
+*.csproj.user
+*.suo
+
+# Resharper files
+*resharper*
+_resharper*/
