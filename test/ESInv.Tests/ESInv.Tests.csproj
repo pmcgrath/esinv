@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NSubstitute">
+      <HintPath>..\..\lib\NSubstitute\NSubstitute.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\oss\btw-samples\_misc\lib-dotnet\NUnit\nunit.framework.dll</HintPath>
     </Reference>
@@ -44,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Domain\Money.cs" />
     <Compile Include="Domain\OrderAggregate.cs" />
+    <Compile Include="Domain\OrderHandler.cs" />
     <Compile Include="Domain\OrderState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

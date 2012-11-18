@@ -14,6 +14,7 @@ namespace ESInv.Tests
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
+				Guid.NewGuid(),
 				10001,
 				new ESInv.Messages.Money("EUR", 100M),
 				new[]
@@ -25,7 +26,7 @@ namespace ESInv.Tests
 
 			var _SUT = new ESInv.Domain.OrderState(new[] { _orderCreated });
 
-			Assert.AreEqual(_orderCreated.Id, _SUT.Id);
+			Assert.AreEqual(_orderCreated.OrderId, _SUT.Id);
 			Assert.AreEqual(_orderCreated.MerchantId, _SUT.MerchantId);
 			Assert.AreEqual(_orderCreated.SaleValue.Currency, _SUT.SaleValue.Currency);
 			Assert.AreEqual(_orderCreated.SaleValue.Amount, _SUT.SaleValue.Amount);
@@ -47,6 +48,7 @@ namespace ESInv.Tests
 		public void When_Order_Created_Twice_Results_In_An_Exception()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
+				Guid.NewGuid(),
 				Guid.NewGuid(),
 				1001,
 				new ESInv.Messages.Money("EUR", 100M),
@@ -80,6 +82,7 @@ namespace ESInv.Tests
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
+				Guid.NewGuid(),
 				10001,
 				new ESInv.Messages.Money("EUR", 100M),
 				new[]
@@ -108,6 +111,7 @@ namespace ESInv.Tests
 		public void When_Full_Non_DCC_Payment_Made_Results_In_An_Order_With_Payments()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
+				Guid.NewGuid(),
 				Guid.NewGuid(),
 				10001,
 				new ESInv.Messages.Money("EUR", 100M),
@@ -138,6 +142,7 @@ namespace ESInv.Tests
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
+				Guid.NewGuid(),
 				10001,
 				new ESInv.Messages.Money("EUR", 100M),
 				new[]
@@ -166,6 +171,7 @@ namespace ESInv.Tests
 		public void When_Second_Partial_DCC_Payment_Made_Results_In_An_Order_With_Payments_Made()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
+				Guid.NewGuid(),
 				Guid.NewGuid(),
 				10001,
 				new ESInv.Messages.Money("EUR", 100M),
@@ -200,6 +206,7 @@ namespace ESInv.Tests
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
+				Guid.NewGuid(),
 				10001,
 				new ESInv.Messages.Money("EUR", 100M),
 				new[]
@@ -232,6 +239,7 @@ namespace ESInv.Tests
 		public void When_A_Full_Refund_Made_After_Payment_Results_In_An_Order_With_A_Net_Payment_Of_Zero()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
+				Guid.NewGuid(),
 				Guid.NewGuid(),
 				10001,
 				new ESInv.Messages.Money("EUR", 100M),

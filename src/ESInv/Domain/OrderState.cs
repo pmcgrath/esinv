@@ -49,7 +49,7 @@ namespace ESInv.Domain
 		{
 			ESInv.DBC.Ensure.That(this.Id == Guid.Empty, "Order has already been created");
 
-			this.Id = @event.Id;
+			this.Id = @event.OrderId;
 			this.MerchantId = @event.MerchantId;
 			this.SaleValue = @event.SaleValue.FromMessage();
 			this.Offers = @event.Offers.Select(offer => offer.FromMessage());

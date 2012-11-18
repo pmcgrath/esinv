@@ -13,6 +13,12 @@ namespace ESInv.Domain
 		}
 
 
+		public static OrderAggregate CreateEmpty()
+		{
+			return new OrderAggregate(new OrderState(new ESInv.Messaging.IEvent[0]));
+		}
+
+
 		public void Create(
 			Merchant merchant,
 			ulong cardNumber,
@@ -41,6 +47,7 @@ namespace ESInv.Domain
 			}
 			
 			var _createdEvent = new ESInv.Messages.OrderCreated(
+				Guid.NewGuid(),
 				Guid.NewGuid(),
 				merchant.Id,
 				saleValue.ToMessage(),

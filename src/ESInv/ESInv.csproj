@@ -47,6 +47,7 @@
     <Compile Include="DBC\Ensure.cs" />
     <Compile Include="DBC\PreConditionFailureException.cs" />
     <Compile Include="Domain\Aggregate.cs" />
+    <Compile Include="Domain\IRepository.cs" />
     <Compile Include="Domain\OrderHandler.cs" />
     <Compile Include="Domain\OrderEntryType.cs" />
     <Compile Include="Domain\IRateService.cs" />
@@ -55,6 +56,8 @@
     <Compile Include="Domain\Merchant.cs" />
     <Compile Include="Domain\MoneyExt.cs" />
     <Compile Include="Domain\OrderAggregate.cs" />
+    <Compile Include="Messages\MakeOrderRefund.cs" />
+    <Compile Include="Messages\MakeOrderPayment.cs" />
     <Compile Include="Messages\CreateOrder.cs" />
     <Compile Include="Messages\OrderRefundMade.cs" />
     <Compile Include="Messages\OrderPaymentMade.cs" />
@@ -72,6 +75,9 @@
     <Compile Include="Services\CardNumberResolution.cs" />
     <Compile Include="Domain\ICardNumberResolutionService.cs" />
     <Compile Include="Services\Rate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

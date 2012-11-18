@@ -3,7 +3,7 @@
 
 namespace ESInv.Messaging
 {
-	public class IEvent : IMessage
+	public interface IEvent : IMessage
 	{
 	}
 }

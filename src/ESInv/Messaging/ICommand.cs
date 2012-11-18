@@ -3,7 +3,7 @@
 
 namespace ESInv.Messaging
 {
-	public class ICommand : IMessage
+	public interface ICommand : IMessage
 	{
 	}
 }

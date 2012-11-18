@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using NSubstitute;
+using NUnit.Framework;
 using System;
 using System.Linq;
 
@@ -20,12 +21,13 @@ namespace ESInv.Tests
 			// Create a creation context
 			// End Billy and Noels build context
 
-			var _cardNumberResolutionService = new ESInv.Services.CardNumberResolution();
-			var _rateService = new ESInv.Services.Rate();
+			var _cardNumberResolutionService = Substitute.For<ESInv.Domain.ICardNumberResolutionService>();
+			_cardNumberResolutionService.Resolve(_cardNumber).Returns("USD");
 
-			var _SUTStateEventStreamEvents = new ESInv.Messaging.IEvent[0];
-			var _SUTState = new ESInv.Domain.OrderState(_SUTStateEventStreamEvents);
-			var _SUT = new ESInv.Domain.OrderAggregate(_SUTState);
+			var _rateService = Substitute.For<ESInv.Domain.IRateService>();
+			_rateService.GetRate(_saleValue.Currency, "USD").Returns(1.27M);
+
+			var _SUT = ESInv.Domain.OrderAggregate.CreateEmpty();
 
 			// Start pipeline
 			_SUT.Create(
@@ -63,12 +65,13 @@ namespace ESInv.Tests
 			var _cardNumber = 4242424242424242UL;
 			var _saleValue = new ESInv.Domain.Money("EUR", 100M);
 
-			var _cardNumberResolutionService = new ESInv.Services.CardNumberResolution();
-			var _rateService = new ESInv.Services.Rate();
+			var _cardNumberResolutionService = Substitute.For<ESInv.Domain.ICardNumberResolutionService>();
+			_cardNumberResolutionService.Resolve(_cardNumber).Returns("USD");
 
-			var _SUTStateEventStreamEvents = new ESInv.Messaging.IEvent[0];
-			var _SUTState = new ESInv.Domain.OrderState(_SUTStateEventStreamEvents);
-			var _SUT = new ESInv.Domain.OrderAggregate(_SUTState);
+			var _rateService = Substitute.For<ESInv.Domain.IRateService>();
+			_rateService.GetRate(_saleValue.Currency, "USD").Returns(1.27M);
+
+			var _SUT = ESInv.Domain.OrderAggregate.CreateEmpty();
 			_SUT.Create(
 				_merchant,
 				_cardNumber,
@@ -88,6 +91,7 @@ namespace ESInv.Tests
 			var _SUTStateEventStreamEvents = new ESInv.Messaging.IEvent[]
 				{
 					new ESInv.Messages.OrderCreated(
+						Guid.NewGuid(),
 						Guid.NewGuid(),
 						1,
 						new ESInv.Messages.Money("EUR", 100M),
@@ -111,6 +115,7 @@ namespace ESInv.Tests
 			var _SUTStateEventStreamEvents = new ESInv.Messaging.IEvent[]
 				{
 					new ESInv.Messages.OrderCreated(
+						Guid.NewGuid(),
 						Guid.NewGuid(),
 						1,
 						new ESInv.Messages.Money("EUR", 100M),
@@ -142,6 +147,7 @@ namespace ESInv.Tests
 				{
 					new ESInv.Messages.OrderCreated(
 						Guid.NewGuid(),
+						Guid.NewGuid(),
 						1,
 						new ESInv.Messages.Money("EUR", 100M),
 						new []
@@ -168,6 +174,7 @@ namespace ESInv.Tests
 			var _SUTStateEventStreamEvents = new ESInv.Messaging.IEvent[]
 				{
 					new ESInv.Messages.OrderCreated(
+						Guid.NewGuid(),
 						Guid.NewGuid(),
 						1,
 						new ESInv.Messages.Money("EUR", 100M),
@@ -202,6 +209,7 @@ namespace ESInv.Tests
 			var _SUTStateEventStreamEvents = new ESInv.Messaging.IEvent[]
 				{
 					new ESInv.Messages.OrderCreated(
+						Guid.NewGuid(),
 						Guid.NewGuid(),
 						1,
 						new ESInv.Messages.Money("EUR", 100M),
