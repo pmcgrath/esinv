@@ -85,7 +85,7 @@ namespace ESInv.Domain
 			ESInv.DBC.Ensure.That(this.c_state.Id != Guid.Empty, "Order has not already been created");
 			ESInv.DBC.Ensure.That(this.c_state.PaymentsHaveBeenMade, "Cannot make refund as no payments have been made");
 			ESInv.DBC.Ensure.That(value.Currency == this.c_state.ExistingPaymentsCurrency, "Currency {0} is in conflict with payment(s) currency {1}", value.Currency, this.c_state.ExistingPaymentsCurrency);
-			ESInv.DBC.Ensure.That(this.c_state.NetPayments >= value, "Refund value {0} exceeds net payments", value.Amount);
+			ESInv.DBC.Ensure.That(this.c_state.NetPaymentsValue >= value, "Refund value {0} exceeds net payments value", value.Amount);
 
 			var _orderRefundMadeEvent = new ESInv.Messages.OrderRefundMade(
 				Guid.NewGuid(),

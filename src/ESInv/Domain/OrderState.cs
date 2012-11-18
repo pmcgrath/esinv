@@ -20,7 +20,7 @@ namespace ESInv.Domain
 		public IEnumerable<OrderEntry> Entries { get { return this.c_entries; } }
 		public bool PaymentsHaveBeenMade { get { return this.DetermineIfPaymentsHaveBeenMade(); } }
 		public string ExistingPaymentsCurrency { get { return this.DetermineExistingPaymentsCurrency(); } }
-		public Money NetPayments { get { return this.DetermineNetPayments(); } }
+		public Money NetPaymentsValue { get { return this.DetermineNetPaymentsValue(); } }
 
 
 		public OrderState(
@@ -99,7 +99,7 @@ namespace ESInv.Domain
 		}
 
 
-		private Money DetermineNetPayments()
+		private Money DetermineNetPaymentsValue()
 		{
 			var _accumulatorSeed = new Money(this.Entries.First().Value.Currency, 0M);
 

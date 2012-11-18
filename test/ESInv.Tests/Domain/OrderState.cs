@@ -98,8 +98,8 @@ namespace ESInv.Tests
 			_SUT.Mutate(_orderPaymentMade);
 
 			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
-			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPayments.Currency);
-			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPayments.Amount);
+			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPaymentsValue.Currency);
+			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(1, _SUT.Entries.Count());
 		}
 
@@ -127,8 +127,8 @@ namespace ESInv.Tests
 			_SUT.Mutate(_orderPaymentMade);
 
 			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
-			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPayments.Currency);
-			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPayments.Amount);
+			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPaymentsValue.Currency);
+			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(1, _SUT.Entries.Count());
 		}
 
@@ -156,8 +156,8 @@ namespace ESInv.Tests
 			_SUT.Mutate(_orderPaymentMade);
 
 			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
-			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPayments.Currency);
-			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPayments.Amount);
+			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPaymentsValue.Currency);
+			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(1, _SUT.Entries.Count());
 		}
 
@@ -189,8 +189,8 @@ namespace ESInv.Tests
 			_SUT.Mutate(_orderPayment2Made);
 
 			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
-			Assert.AreEqual(_orderPayment1Made.Value.Currency, _SUT.NetPayments.Currency);
-			Assert.AreEqual(_orderPayment1Made.Value.Amount + _orderPayment2Made.Value.Amount, _SUT.NetPayments.Amount);
+			Assert.AreEqual(_orderPayment1Made.Value.Currency, _SUT.NetPaymentsValue.Currency);
+			Assert.AreEqual(_orderPayment1Made.Value.Amount + _orderPayment2Made.Value.Amount, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(2, _SUT.Entries.Count());
 		}
 
@@ -222,8 +222,8 @@ namespace ESInv.Tests
 			_SUT.Mutate(_orderRefundMade);
 
 			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
-			Assert.AreEqual("USD", _SUT.NetPayments.Currency);
-			Assert.AreEqual(7M, _SUT.NetPayments.Amount);
+			Assert.AreEqual("USD", _SUT.NetPaymentsValue.Currency);
+			Assert.AreEqual(7M, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(2, _SUT.Entries.Count());
 		}
 
@@ -255,8 +255,8 @@ namespace ESInv.Tests
 			_SUT.Mutate(_orderRefundMade);
 
 			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
-			Assert.AreEqual("USD", _SUT.NetPayments.Currency);
-			Assert.AreEqual(0M, _SUT.NetPayments.Amount);
+			Assert.AreEqual("USD", _SUT.NetPaymentsValue.Currency);
+			Assert.AreEqual(0M, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(2, _SUT.Entries.Count());
 		}
 	}
