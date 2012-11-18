@@ -6,11 +6,11 @@ namespace ESInv.Messages
 {
 	public class OrderCreated : ESInv.Messaging.IEvent
 	{
-		public Guid Id { get; private set; }
-		public int MerchantId { get; private set; }
-		public Money SaleValue { get; private set; }
-		public IEnumerable<PaymentOffer> Offers { get; private set; }
-		public DateTimeOffset Timestamp { get; private set; }
+		public readonly Guid Id;
+		public readonly int MerchantId;
+		public readonly Money SaleValue;
+		public readonly IEnumerable<PaymentOffer> Offers;
+		public readonly DateTimeOffset Timestamp;
 
 
 		public OrderCreated(

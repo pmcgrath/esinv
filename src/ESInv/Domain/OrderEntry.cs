@@ -5,9 +5,9 @@ namespace ESInv.Domain
 {
 	public class OrderEntry
 	{
-		public OrderEntryType Type { get; private set; }
-		public Money Value { get; private set; }
-		public DateTimeOffset Timestamp { get; private set; }
+		public readonly OrderEntryType Type;
+		public readonly Money Value;
+		public readonly DateTimeOffset Timestamp;
 
 
 		public OrderEntry(

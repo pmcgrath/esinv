@@ -53,6 +53,7 @@
     <Compile Include="Domain\Merchant.cs" />
     <Compile Include="Domain\MoneyExt.cs" />
     <Compile Include="Domain\OrderAggregate.cs" />
+    <Compile Include="Messages\CreateOrder.cs" />
     <Compile Include="Messages\OrderRefundMade.cs" />
     <Compile Include="Messages\OrderPaymentMade.cs" />
     <Compile Include="Messages\OrderCreated.cs" />

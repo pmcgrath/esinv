@@ -5,8 +5,8 @@ namespace ESInv.Messages
 {
 	public class Money
 	{
-		public string Currency { get; private set; }
-		public decimal Amount { get; private set; }
+		public readonly string Currency;
+		public readonly decimal Amount;
 
 
 		public Money(

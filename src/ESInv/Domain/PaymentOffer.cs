@@ -5,8 +5,8 @@ namespace ESInv.Domain
 {
 	public class PaymentOffer
 	{
-		public decimal ExchangeRateIncludingMargin { get; private set; }
-		public Money PaymentValue { get; private set; }
+		public readonly decimal ExchangeRateIncludingMargin;
+		public readonly Money PaymentValue;
 
 
 		public PaymentOffer(
