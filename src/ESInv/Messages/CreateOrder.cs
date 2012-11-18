@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 
 namespace ESInv.Messages
@@ -8,16 +7,19 @@ namespace ESInv.Messages
 	{
 		public readonly Guid Id;
 		public readonly string MerchantIdentifier;
+		public readonly ulong CardNumber;
 		public readonly Money SaleValue;
 		
 
 		public CreateOrder(
 			Guid id,
 			string merchantIdentifier,
+			ulong cardNumber,
 			Money saleValue)
 		{
 			this.Id = id;
 			this.MerchantIdentifier = merchantIdentifier;
+			this.CardNumber = cardNumber;
 			this.SaleValue = saleValue;
 		}
 	}

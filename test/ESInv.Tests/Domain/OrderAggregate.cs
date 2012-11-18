@@ -13,9 +13,9 @@ namespace ESInv.Tests
 		{
 			// Start Billy and Noels build context
 			// Parse and good
+			var _merchant = new ESInv.Domain.Merchant(12, "The merchant name");
 			var _cardNumber = 4242424242424242UL;
 			var _saleValue = new ESInv.Domain.Money("EUR", 100M);
-			var _merchant = new ESInv.Domain.Merchant(12, "The merchant name");
 			// Signature 
 			// Create a creation context
 			// End Billy and Noels build context

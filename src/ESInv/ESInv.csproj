@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="DBC\Ensure.cs" />
     <Compile Include="DBC\PreConditionFailureException.cs" />
+    <Compile Include="Domain\Aggregate.cs" />
+    <Compile Include="Domain\OrderHandler.cs" />
     <Compile Include="Domain\OrderEntryType.cs" />
     <Compile Include="Domain\IRateService.cs" />
     <Compile Include="Domain\OrderEntry.cs" />
@@ -59,6 +61,7 @@
     <Compile Include="Messages\OrderCreated.cs" />
     <Compile Include="Messages\PaymentOffer.cs" />
     <Compile Include="Messages\Money.cs" />
+    <Compile Include="Messaging\ICommandHandler.cs" />
     <Compile Include="Messaging\IEvent.cs" />
     <Compile Include="Messaging\ICommand.cs" />
     <Compile Include="Messaging\IMessage.cs" />
