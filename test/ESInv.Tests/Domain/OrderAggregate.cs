@@ -56,6 +56,32 @@ namespace ESInv.Tests
 		}
 
 
+		[Test]
+		public void ClearUncommitedChanges_Where_Order_Created_Event_Existed_Results_In_Order_With_No_Uncommited_Changes()
+		{
+			var _merchant = new ESInv.Domain.Merchant(12, "The merchant name");
+			var _cardNumber = 4242424242424242UL;
+			var _saleValue = new ESInv.Domain.Money("EUR", 100M);
+
+			var _cardNumberResolutionService = new ESInv.Services.CardNumberResolution();
+			var _rateService = new ESInv.Services.Rate();
+
+			var _SUTStateEventStreamEvents = new ESInv.Messaging.IEvent[0];
+			var _SUTState = new ESInv.Domain.OrderState(_SUTStateEventStreamEvents);
+			var _SUT = new ESInv.Domain.OrderAggregate(_SUTState);
+			_SUT.Create(
+				_merchant,
+				_cardNumber,
+				_saleValue,
+				_cardNumberResolutionService,
+				_rateService);
+
+			_SUT.ClearUncommitedChanges();
+
+			Assert.AreEqual(0, _SUT.UncommittedChanges.Count());
+		}
+
+
 		[Test, ExpectedException]
 		public void MakePayment_Where_Non_Offer_Currency_Results_In_An_Exception()
 		{

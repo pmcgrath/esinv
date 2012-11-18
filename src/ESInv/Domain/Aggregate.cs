@@ -31,5 +31,11 @@ namespace ESInv.Domain
 			this.c_uncommittedChanges.Add(@event);
 			((dynamic)this.c_state).Mutate(@event);
 		}
+
+
+		public void ClearUncommitedChanges()
+		{
+			this.c_uncommittedChanges.Clear();
+		}
 	}
 }
