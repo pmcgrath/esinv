@@ -7,13 +7,21 @@ namespace ESInv.Domain
 {
 	public class OrderState
 	{
+		private IList<OrderEntry> c_entries;
+		
+
 		public Guid Id { get; private set; }
 		public int MerchantId { get; private set; }
 		public Money SaleValue { get; private set; }
 		public IEnumerable<PaymentOffer> Offers { get; private set; }
 		public DateTimeOffset CreationTimestamp { get; private set; }
-		public Money CumulativePaymentValue { get; private set; }
-		
+
+
+		public IEnumerable<OrderEntry> Entries { get { return this.c_entries; } }
+		public bool PaymentsHaveBeenMade { get { return this.DetermineIfPaymentsHaveBeenMade(); } }
+		public string ExistingPaymentsCurrency { get { return this.DetermineExistingPaymentsCurrency(); } }
+		public Money NetPayments { get { return this.DetermineNetPayments(); } }
+
 
 		public OrderState(
 			IEnumerable<ESInv.Messaging.IEvent> events)
@@ -21,11 +29,18 @@ namespace ESInv.Domain
 			foreach (var @event in events) { this.Mutate(@event); }
 		}
 
-
+	
 		public void Mutate(
 			ESInv.Messaging.IEvent @event)
 		{
 			((dynamic)this).When((dynamic)@event);
+		}
+
+
+		public bool IsAnOfferCurrency(
+			string currency)
+		{
+			return this.Offers.Any(offer => offer.PaymentValue.Currency == currency);
 		}
 
 
@@ -39,6 +54,8 @@ namespace ESInv.Domain
 			this.SaleValue = @event.SaleValue.FromMessage();
 			this.Offers = @event.Offers.Select(offer => offer.FromMessage());
 			this.CreationTimestamp = @event.Timestamp;
+
+			this.c_entries = new List<OrderEntry>();
 		}
 
 
@@ -47,18 +64,53 @@ namespace ESInv.Domain
 		{
 			ESInv.DBC.Ensure.That(this.Id != Guid.Empty, "Order has NOT already been created");
 
-			var _paymentValue = @event.Value.FromMessage();
+			this.c_entries.Add(
+				new OrderEntry(
+					OrderEntryType.Debit,
+					@event.Value.FromMessage(),
+					DateTimeOffset.Now));
+		}
 
-			var _matchingOffer = this.Offers.FirstOrDefault(offer => offer.PaymentValue.Currency == _paymentValue.Currency);
-			ESInv.DBC.Ensure.That(_matchingOffer != null, "Currency {0} is not an offer currency", _paymentValue.Currency);
 
-			var _cumulativePaymentValue = this.CumulativePaymentValue != null ? this.CumulativePaymentValue : new Money(_paymentValue.Currency, 0.00M);
-			ESInv.DBC.Ensure.That(_paymentValue.Currency == _cumulativePaymentValue.Currency, "Currency {0} is in conflict with an existing payment currency {1}", _paymentValue.Currency, _cumulativePaymentValue.Currency);
+		private void When(
+			ESInv.Messages.OrderRefundMade @event)
+		{
+			ESInv.DBC.Ensure.That(this.Id != Guid.Empty, "Order has NOT already been created");
 
-			_cumulativePaymentValue += _paymentValue;
-			ESInv.DBC.Ensure.That(_cumulativePaymentValue <= _matchingOffer.PaymentValue, "Payment exceeds balance");
+			this.c_entries.Add(
+				new OrderEntry(
+					OrderEntryType.Credit,
+					@event.Value.FromMessage(),
+					DateTimeOffset.Now));
+		}
 
-			this.CumulativePaymentValue = _cumulativePaymentValue;
+
+		private bool DetermineIfPaymentsHaveBeenMade()
+		{
+			return this.c_entries.Any(entry => entry.Type == OrderEntryType.Debit);
+		}
+
+
+		private string DetermineExistingPaymentsCurrency()
+		{
+			if (!this.c_entries.Any(entry => entry.Type == OrderEntryType.Debit)) { return null; }
+
+			return this.c_entries.First(entry => entry.Type == OrderEntryType.Debit).Value.Currency;
+		}
+
+
+		private Money DetermineNetPayments()
+		{
+			var _accumulatorSeed = new Money(this.Entries.First().Value.Currency, 0M);
+
+			return this.c_entries
+				.Aggregate(
+					_accumulatorSeed,
+					(accumulatedValue, entry) => 
+						{
+							if (entry.Type == OrderEntryType.Debit) { return accumulatedValue + entry.Value; }
+							return accumulatedValue - entry.Value;
+						});
 		}
 	}
 }

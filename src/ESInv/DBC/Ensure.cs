@@ -9,16 +9,16 @@ namespace ESInv.DBC
 			bool condition,
 			string message)
 		{
-			if (!condition) { throw new ApplicationException(message); }
+			if (!condition) { throw new PreConditionFailureException(message); }
 		}
 
 
 		public static void That(
 			bool condition,
 			string format,
-			params string[] args)
+			params object[] args)
 		{
-			if (!condition) { throw new ApplicationException(string.Format(format, args)); }
+			if (!condition) { throw new PreConditionFailureException(string.Format(format, args)); }
 		}
 	}
 }

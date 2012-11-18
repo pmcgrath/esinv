@@ -10,16 +10,16 @@ namespace ESInv.Tests
 	public class OrderState
 	{
 		[Test]
-		public void When_Order_Created_Should_Result_In_An_Order_With_Order_Attributes()
+		public void When_Order_Created_Results_In_An_Order_With_Order_Attributes()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
 				10001,
-				new ESInv.Messages.Money("EUR", 100.00M),
+				new ESInv.Messages.Money("EUR", 100M),
 				new[]
 					{
-						new ESInv.Messages.PaymentOffer(1.00M, new ESInv.Messages.Money("EUR", 100.00M)),
-						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127.00M))
+						new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
 					},
 				DateTimeOffset.Now);
 
@@ -43,17 +43,17 @@ namespace ESInv.Tests
 		}
 
 
-		[Test, ExpectedException(typeof(ApplicationException))]
-		public void When_Order_Created_Twice_Should_Result_In_An_Exception()
+		[Test, ExpectedException()]
+		public void When_Order_Created_Twice_Results_In_An_Exception()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
 				1001,
-				new ESInv.Messages.Money("EUR", 100.00M),
+				new ESInv.Messages.Money("EUR", 100M),
 				new[]
 					{
-						new ESInv.Messages.PaymentOffer(1.00M, new ESInv.Messages.Money("EUR", 100.00M)),
-						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127.00M))
+						new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
 					},
 				DateTimeOffset.Now);
 
@@ -61,165 +61,203 @@ namespace ESInv.Tests
 		}
 
 
+		[Test, ExpectedException()]
+		public void When_Payment_Made_For_Order_Not_Already_Created_Results_In_An_Exception()
+		{
+			var _orderPaymentMade = new ESInv.Messages.OrderPaymentMade(
+				Guid.NewGuid(),
+				new ESInv.Messages.Money("USD", 127M),
+				DateTimeOffset.Now);
+
+			var _SUT = new ESInv.Domain.OrderState(new ESInv.Messaging.IEvent[0]);
+
+			_SUT.Mutate(_orderPaymentMade);
+		}
+
+	
 		[Test]
-		public void When_Full_DCC_Order_Payment_Made_Should_Result_In_An_Order_With_An_Outstanding_Balance_Of_Zero()
+		public void When_Full_DCC_Payment_Made_Results_In_An_Order_With_Payments()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
 				10001,
-				new ESInv.Messages.Money("EUR", 100.00M),
+				new ESInv.Messages.Money("EUR", 100M),
 				new[]
 					{
-						new ESInv.Messages.PaymentOffer(1.00M, new ESInv.Messages.Money("EUR", 100.00M)),
-						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127.00M))
+						new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
 					},
 				DateTimeOffset.Now);
 			var _orderPaymentMade = new ESInv.Messages.OrderPaymentMade(
 				Guid.NewGuid(),
-				new ESInv.Messages.Money("USD", 127.00M),
+				new ESInv.Messages.Money("USD", 127M),
 				DateTimeOffset.Now);
 
 			var _SUT = new ESInv.Domain.OrderState(new[] { _orderCreated });
 
 			_SUT.Mutate(_orderPaymentMade);
 
-			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.CumulativePaymentValue.Currency);
-			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.CumulativePaymentValue.Amount);
+			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
+			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPayments.Currency);
+			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPayments.Amount);
+			Assert.AreEqual(1, _SUT.Entries.Count());
 		}
 
 
 		[Test]
-		public void When_Second_Partial_DCC_Order_Payment_Made_Should_Result_In_An_Order_With_An_Outstanding_Balance_Of_Zero()
+		public void When_Full_Non_DCC_Payment_Made_Results_In_An_Order_With_Payments()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
 				10001,
-				new ESInv.Messages.Money("EUR", 100.00M),
+				new ESInv.Messages.Money("EUR", 100M),
 				new[]
 					{
-						new ESInv.Messages.PaymentOffer(1.00M, new ESInv.Messages.Money("EUR", 100.00M)),
-						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127.00M))
-					},
-				DateTimeOffset.Now);
-			var _orderPayment1Made = new ESInv.Messages.OrderPaymentMade(
-				Guid.NewGuid(),
-				new ESInv.Messages.Money("USD", 107.00M),
-				DateTimeOffset.Now);
-			var _orderPayment2Made = new ESInv.Messages.OrderPaymentMade(
-				Guid.NewGuid(),
-				new ESInv.Messages.Money("USD", 20.00M),
-				DateTimeOffset.Now);
-
-			var _SUT = new ESInv.Domain.OrderState(new ESInv.Messaging.IEvent[] { _orderCreated, _orderPayment1Made });
-
-			_SUT.Mutate(_orderPayment2Made);
-
-			Assert.AreEqual(_orderPayment2Made.Value.Currency, _SUT.CumulativePaymentValue.Currency);
-			Assert.AreEqual((_orderPayment1Made.Value.Amount + _orderPayment2Made.Value.Amount), _SUT.CumulativePaymentValue.Amount);
-		}
-
-
-		[Test, ExpectedException]
-		public void When_DCC_Order_Payment_For_Non_Offer_Currency_Made_Should_Result_In_An_Exception()
-		{
-			var _orderCreated = new ESInv.Messages.OrderCreated(
-				Guid.NewGuid(),
-				10001,
-				new ESInv.Messages.Money("EUR", 100.00M),
-				new[]
-					{
-						new ESInv.Messages.PaymentOffer(1.00M, new ESInv.Messages.Money("EUR", 100.00M)),
-						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127.00M))
+						new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
 					},
 				DateTimeOffset.Now);
 			var _orderPaymentMade = new ESInv.Messages.OrderPaymentMade(
 				Guid.NewGuid(),
-				new ESInv.Messages.Money("GBP", 100.00M),
+				new ESInv.Messages.Money("EUR", 100M),
 				DateTimeOffset.Now);
 
 			var _SUT = new ESInv.Domain.OrderState(new[] { _orderCreated });
 
 			_SUT.Mutate(_orderPaymentMade);
+
+			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
+			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPayments.Currency);
+			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPayments.Amount);
+			Assert.AreEqual(1, _SUT.Entries.Count());
 		}
 
 
-		[Test, ExpectedException]
-		public void When_DCC_Order_Payment_Made_That_Exceeds_The_Offer_Should_Result_In_An_Exception()
+		[Test]
+		public void When_Partial_DCC_Payment_Made_Results_In_An_Order_With_Payments()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
 				10001,
-				new ESInv.Messages.Money("EUR", 100.00M),
+				new ESInv.Messages.Money("EUR", 100M),
 				new[]
 					{
-						new ESInv.Messages.PaymentOffer(1.00M, new ESInv.Messages.Money("EUR", 100.00M)),
-						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127.00M))
+						new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
 					},
 				DateTimeOffset.Now);
 			var _orderPaymentMade = new ESInv.Messages.OrderPaymentMade(
 				Guid.NewGuid(),
-				new ESInv.Messages.Money("USD", 10000.00M),
+				new ESInv.Messages.Money("USD", 27.56M),
 				DateTimeOffset.Now);
 
 			var _SUT = new ESInv.Domain.OrderState(new[] { _orderCreated });
 
 			_SUT.Mutate(_orderPaymentMade);
+
+			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
+			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPayments.Currency);
+			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPayments.Amount);
+			Assert.AreEqual(1, _SUT.Entries.Count());
 		}
 
 
-		[Test, ExpectedException]
-		public void When_Second_Payment_Is_For_A_Different_Currency_Should_Result_In_An_Exception()
+		[Test]
+		public void When_Second_Partial_DCC_Payment_Made_Results_In_An_Order_With_Payments_Made()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
 				10001,
-				new ESInv.Messages.Money("EUR", 100.00M),
+				new ESInv.Messages.Money("EUR", 100M),
 				new[]
 					{
-						new ESInv.Messages.PaymentOffer(1.00M, new ESInv.Messages.Money("EUR", 100.00M)),
-						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127.00M))
+						new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
 					},
 				DateTimeOffset.Now);
 			var _orderPayment1Made = new ESInv.Messages.OrderPaymentMade(
 				Guid.NewGuid(),
-				new ESInv.Messages.Money("USD", 107.00M),
+				new ESInv.Messages.Money("USD", 107M),
 				DateTimeOffset.Now);
 			var _orderPayment2Made = new ESInv.Messages.OrderPaymentMade(
 				Guid.NewGuid(),
-				new ESInv.Messages.Money("EUR", 1.00M),
+				new ESInv.Messages.Money("USD", 20M),
 				DateTimeOffset.Now);
 
 			var _SUT = new ESInv.Domain.OrderState(new ESInv.Messaging.IEvent[] { _orderCreated, _orderPayment1Made });
 
 			_SUT.Mutate(_orderPayment2Made);
+
+			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
+			Assert.AreEqual(_orderPayment1Made.Value.Currency, _SUT.NetPayments.Currency);
+			Assert.AreEqual(_orderPayment1Made.Value.Amount + _orderPayment2Made.Value.Amount, _SUT.NetPayments.Amount);
+			Assert.AreEqual(2, _SUT.Entries.Count());
 		}
 
 
-		[Test, ExpectedException]
-		public void When_Second_Payment_Is_For_Same_Currency_But_Exceeds_The_Balance_Should_Result_In_An_Exception()
+		[Test]
+		public void When_A_Partial_Refund_Made_After_Payment_Results_In_An_Order_With_A_Net_Payment()
 		{
 			var _orderCreated = new ESInv.Messages.OrderCreated(
 				Guid.NewGuid(),
 				10001,
-				new ESInv.Messages.Money("EUR", 100.00M),
+				new ESInv.Messages.Money("EUR", 100M),
 				new[]
 					{
-						new ESInv.Messages.PaymentOffer(1.00M, new ESInv.Messages.Money("EUR", 100.00M)),
-						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127.00M))
+						new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
 					},
 				DateTimeOffset.Now);
-			var _orderPayment1Made = new ESInv.Messages.OrderPaymentMade(
+			var _orderPaymentMade = new ESInv.Messages.OrderPaymentMade(
 				Guid.NewGuid(),
-				new ESInv.Messages.Money("USD", 107.00M),
+				new ESInv.Messages.Money("USD", 107M),
 				DateTimeOffset.Now);
-			var _orderPayment2Made = new ESInv.Messages.OrderPaymentMade(
+			var _SUT = new ESInv.Domain.OrderState(new ESInv.Messaging.IEvent[] { _orderCreated, _orderPaymentMade });
+
+			var _orderRefundMade = new ESInv.Messages.OrderRefundMade(
 				Guid.NewGuid(),
-				new ESInv.Messages.Money("USD", 100000.00M),
+				new ESInv.Messages.Money("USD", 100M),
 				DateTimeOffset.Now);
 
-			var _SUT = new ESInv.Domain.OrderState(new ESInv.Messaging.IEvent[] { _orderCreated, _orderPayment1Made });
+			_SUT.Mutate(_orderRefundMade);
 
-			_SUT.Mutate(_orderPayment2Made);
+			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
+			Assert.AreEqual("USD", _SUT.NetPayments.Currency);
+			Assert.AreEqual(7M, _SUT.NetPayments.Amount);
+			Assert.AreEqual(2, _SUT.Entries.Count());
+		}
+
+
+		[Test]
+		public void When_A_Full_Refund_Made_After_Payment_Results_In_An_Order_With_A_Net_Payment_Of_Zero()
+		{
+			var _orderCreated = new ESInv.Messages.OrderCreated(
+				Guid.NewGuid(),
+				10001,
+				new ESInv.Messages.Money("EUR", 100M),
+				new[]
+					{
+						new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+						new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
+					},
+				DateTimeOffset.Now);
+			var _orderPaymentMade = new ESInv.Messages.OrderPaymentMade(
+				Guid.NewGuid(),
+				new ESInv.Messages.Money("USD", 107M),
+				DateTimeOffset.Now);
+			var _SUT = new ESInv.Domain.OrderState(new ESInv.Messaging.IEvent[] { _orderCreated, _orderPaymentMade });
+
+			var _orderRefundMade = new ESInv.Messages.OrderRefundMade(
+				Guid.NewGuid(),
+				new ESInv.Messages.Money("USD", 107M),
+				DateTimeOffset.Now);
+
+			_SUT.Mutate(_orderRefundMade);
+
+			Assert.IsTrue(_SUT.PaymentsHaveBeenMade);
+			Assert.AreEqual("USD", _SUT.NetPayments.Currency);
+			Assert.AreEqual(0M, _SUT.NetPayments.Amount);
+			Assert.AreEqual(2, _SUT.Entries.Count());
 		}
 	}
 }

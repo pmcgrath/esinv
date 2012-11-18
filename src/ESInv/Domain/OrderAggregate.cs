@@ -8,10 +8,10 @@ namespace ESInv.Domain
 	public class OrderAggregate
 	{
 		private readonly OrderState c_state;
-		private readonly IList<ESInv.Messaging.IEvent> c_changes;
+		private readonly IList<ESInv.Messaging.IEvent> c_uncommittedChanges;
 
 
-		public IEnumerable<ESInv.Messaging.IEvent> Changes { get { return this.c_changes; } }
+		public IEnumerable<ESInv.Messaging.IEvent> UncommittedChanges { get { return this.c_uncommittedChanges; } }
 
 
 		public OrderAggregate(
@@ -19,7 +19,7 @@ namespace ESInv.Domain
 		{
 			this.c_state = state;
 
-			this.c_changes = new List<ESInv.Messaging.IEvent>();
+			this.c_uncommittedChanges = new List<ESInv.Messaging.IEvent>();
 		}
 
 
@@ -61,37 +61,46 @@ namespace ESInv.Domain
 
 
 		public void MakePayment(
-			Money @value)
+			Money value)
 		{
 			ESInv.DBC.Ensure.That(this.c_state.Id != Guid.Empty, "Order has not already been created");
-			// Skipping other checks
-
-			var _saleValue = @value;
-			var _paymentValue = @value;
-			if (@value.Currency != this.c_state.SaleValue.Currency)
+			ESInv.DBC.Ensure.That(this.c_state.IsAnOfferCurrency(value.Currency), "Currency {0} is not an offer currency", value.Currency);
+			if (this.c_state.PaymentsHaveBeenMade)
 			{
-				var _matchingDCCOffer = this.c_state.Offers.FirstOrDefault(offer => offer.PaymentValue.Currency == @value.Currency);
-				// Assumes it is found for now
-				var _reverseEngineeredSaleValue = @value.Amount / _matchingDCCOffer.ExchangeRateIncludingMargin; // Ignoring rounding
-				_saleValue = new Money(this.c_state.SaleValue.Currency, _reverseEngineeredSaleValue);
-
-				_paymentValue = @value;
+				ESInv.DBC.Ensure.That(value.Currency == this.c_state.ExistingPaymentsCurrency, "Currency {0} is in conflict with existing payment(s) currency {1}", value.Currency, this.c_state.ExistingPaymentsCurrency);
 			}
 
-			var _confirmedEvent = new ESInv.Messages.OrderPaymentMade(
+			var _orderPaymentMadeEvent = new ESInv.Messages.OrderPaymentMade(
 				Guid.NewGuid(),
-				@value.ToMessage(),
+				value.ToMessage(),
 				DateTimeOffset.Now);
-			this.Apply(_confirmedEvent);
+
+			this.Apply(_orderPaymentMadeEvent);
+		}
+
+
+		public void MakeRefund(
+			Money value)
+		{
+			ESInv.DBC.Ensure.That(this.c_state.Id != Guid.Empty, "Order has not already been created");
+			ESInv.DBC.Ensure.That(this.c_state.PaymentsHaveBeenMade, "Cannot make refund as no payments have been made");
+			ESInv.DBC.Ensure.That(value.Currency == this.c_state.ExistingPaymentsCurrency, "Currency {0} is in conflict with payment(s) currency {1}", value.Currency, this.c_state.ExistingPaymentsCurrency);
+			ESInv.DBC.Ensure.That(this.c_state.NetPayments >= value, "Refund value {0} exceeds net payments", value.Amount);
+
+			var _orderRefundMadeEvent = new ESInv.Messages.OrderRefundMade(
+				Guid.NewGuid(),
+				value.ToMessage(),
+				DateTimeOffset.Now);
+
+			this.Apply(_orderRefundMadeEvent);
 		}
 
 
 		private void Apply(
 			ESInv.Messaging.IEvent @event)
 		{
-			this.c_changes.Add(@event);
+			this.c_uncommittedChanges.Add(@event);
 			this.c_state.Mutate(@event);
-			// bus.Publish for external subscribers?
 		}
 	}
 }
