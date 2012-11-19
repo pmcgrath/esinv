@@ -6,6 +6,9 @@ namespace ESInv.Domain
 {
 	public class OrderAggregate : Aggregate<OrderState>
 	{
+		public Guid Id { get { return base.State.Id; } }
+
+
 		public OrderAggregate(
 			OrderState state)
 			: base(state)

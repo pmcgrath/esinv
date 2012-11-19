@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\OrderRepository.cs" />
     <Compile Include="Domain\Money.cs" />
     <Compile Include="Domain\OrderAggregate.cs" />
     <Compile Include="Domain\OrderHandler.cs" />

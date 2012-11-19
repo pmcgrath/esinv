@@ -13,6 +13,7 @@ Merchant repository should be based on the event store also
 Should i allow multiple key types ? Guid for order, int for merchant
 How do i get the merchant from the event store unless the command includes the merchant Id
 How\Where do i publish events so they can be subscribed to externally ? Bus will need to cater for internal and external events
+Throwing exceptions on command failures - not recording attempts ? .i.e Commands are expected to succeed when they get to the handler
 
 
 
