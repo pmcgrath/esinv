@@ -31,12 +31,20 @@ namespace ESInv.Tests.Data
 				_rateService);
 
 			_order.MakePayment(
-				new ESInv.Domain.Money("EUR", 90M));
+				new ESInv.Domain.Money("EUR", 50M));
 
 			var _SUT = new ESInv.Data.OrderRepository();
 			_SUT.Save(_order);
 
 			var _retreivedOrder = _SUT.GetById(_order.Id);
+
+			_retreivedOrder.MakePayment(
+				new ESInv.Domain.Money("EUR", 50M));
+
+			_retreivedOrder.MakePayment(
+				new ESInv.Domain.Money("EUR", 50M));
+
+			_SUT.Save(_retreivedOrder);
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace ESInv.Domain
 
 
 		protected TState State { get { return this.c_state; } }
-		
+
 
 		public IEnumerable<ESInv.Messaging.IEvent> UncommittedChanges { get { return this.c_uncommittedChanges; } }
 

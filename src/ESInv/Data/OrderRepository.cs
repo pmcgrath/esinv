@@ -42,16 +42,16 @@ namespace ESInv.Data
 				var _eventStream = string.Format("order/{0}", aggregate.Id);
 
 				// Should re-use event Id directly
-				var _events = aggregate.UncommittedChanges
-					.Select(change => 
-						new Event(
+				var _eventStoreDescriptors = aggregate.UncommittedChanges
+					.Select(change =>
+						new EventStoreDescriptor(
 							Guid.NewGuid(),
 							change.GetType().FullName,
  							Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(change)),
-							null))
-					.ToArray();
+							null));
 
-				_connection.AppendToStream(_eventStream, -1, _events);
+				var _expectedVersion = ExpectedVersion.Any;
+				_connection.AppendToStream(_eventStream, _expectedVersion, _eventStoreDescriptors);
 
 				aggregate.ClearUncommitedChanges();
 			}
@@ -71,28 +71,6 @@ namespace ESInv.Data
 
 			var _deserialisedEvent = JsonConvert.DeserializeObject<ESInv.Messages.OrderPaymentMade>(_eventJson);
 
-		}
-	}
-
-
-	public class Event : IEvent
-	{
-		public Guid EventId { get; private set; }
-		public string Type { get; private set; }
-		public byte[] Data { get; private set; }
-		public byte[] Metadata { get; private set; }
-
-
-		public Event(
-			Guid eventId,
-			string type,
-			byte[] data,
-			byte[] metadata)
-		{
-			this.EventId = eventId;
-			this.Type = type;
-			this.Data = data;
-			this.Metadata = metadata;
 		}
 	}
 }

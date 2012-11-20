@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\EventStoreDescriptor.cs" />
     <Compile Include="Data\OrderRepository.cs" />
     <Compile Include="DBC\Ensure.cs" />
     <Compile Include="DBC\PreConditionFailureException.cs" />
