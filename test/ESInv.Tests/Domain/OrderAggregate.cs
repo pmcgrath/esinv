@@ -102,8 +102,7 @@ namespace ESInv.Tests
 							},
 						DateTimeOffset.Now)
 				};
-			var _SUTState = new ESInv.Domain.OrderState(_SUTStateEventStreamEvents);
-			var _SUT = new ESInv.Domain.OrderAggregate(_SUTState);
+			var _SUT = new ESInv.Domain.OrderAggregate(_SUTStateEventStreamEvents);
 
 			_SUT.MakePayment(new ESInv.Domain.Money("GBP", 20M));
 		}
@@ -130,8 +129,7 @@ namespace ESInv.Tests
 						new ESInv.Messages.Money("USD", 107M),
 						DateTimeOffset.Now)
 				};
-			var _SUTState = new ESInv.Domain.OrderState(_SUTStateEventStreamEvents);
-			var _SUT = new ESInv.Domain.OrderAggregate(_SUTState);
+			var _SUT = new ESInv.Domain.OrderAggregate(_SUTStateEventStreamEvents);
 
 			_SUT.MakePayment(new ESInv.Domain.Money("USD", 100000M));
 
@@ -161,8 +159,7 @@ namespace ESInv.Tests
 						new ESInv.Messages.Money("USD", 15M),
 						DateTimeOffset.Now)
 				};
-			var _SUTState = new ESInv.Domain.OrderState(_SUTStateEventStreamEvents);
-			var _SUT = new ESInv.Domain.OrderAggregate(_SUTState);
+			var _SUT = new ESInv.Domain.OrderAggregate(_SUTStateEventStreamEvents);
 
 			_SUT.MakePayment(new ESInv.Domain.Money("EUR", 100000M));
 		}
@@ -193,8 +190,7 @@ namespace ESInv.Tests
 						new ESInv.Messages.Money("EUR", 80M),
 						DateTimeOffset.Now)
 				};
-			var _SUTState = new ESInv.Domain.OrderState(_SUTStateEventStreamEvents);
-			var _SUT = new ESInv.Domain.OrderAggregate(_SUTState);
+			var _SUT = new ESInv.Domain.OrderAggregate(_SUTStateEventStreamEvents);
 
 			_SUT.MakeRefund(new ESInv.Domain.Money("EUR", 5M));
 
@@ -228,8 +224,7 @@ namespace ESInv.Tests
 						new ESInv.Messages.Money("EUR", 80M),
 						DateTimeOffset.Now)
 				};
-			var _SUTState = new ESInv.Domain.OrderState(_SUTStateEventStreamEvents);
-			var _SUT = new ESInv.Domain.OrderAggregate(_SUTState);
+			var _SUT = new ESInv.Domain.OrderAggregate(_SUTStateEventStreamEvents);
 
 			_SUT.MakeRefund(new ESInv.Domain.Money("EUR", 25M));
 		}

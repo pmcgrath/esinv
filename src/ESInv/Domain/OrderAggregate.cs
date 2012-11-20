@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 
@@ -10,15 +11,15 @@ namespace ESInv.Domain
 
 
 		public OrderAggregate(
-			OrderState state)
-			: base(state)
+			IEnumerable<ESInv.Messaging.IEvent> events)
+			: base(new OrderState(events))
 		{
 		}
 
 
 		public static OrderAggregate CreateEmpty()
 		{
-			return new OrderAggregate(new OrderState(new ESInv.Messaging.IEvent[0]));
+			return new OrderAggregate(new ESInv.Messaging.IEvent[0]);
 		}
 
 

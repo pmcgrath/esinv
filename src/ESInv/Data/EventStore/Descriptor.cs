@@ -2,7 +2,7 @@
 using System;
 
 
-namespace ESInv.Data
+namespace ESInv.Data.EventStore
 {
 	public class EventStoreDescriptor : IEvent
 	{

@@ -50,11 +50,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\EventStoreDescriptor.cs" />
-    <Compile Include="Data\OrderRepository.cs" />
+    <Compile Include="Data\EventStore\Descriptor.cs" />
+    <Compile Include="Data\EventStore\IStore.cs" />
+    <Compile Include="Data\EventStore\Store.cs" />
+    <Compile Include="Data\Repository.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DBC\Ensure.cs" />
     <Compile Include="DBC\PreConditionFailureException.cs" />
     <Compile Include="Domain\Aggregate.cs" />
+    <Compile Include="Domain\IAggregate.cs" />
+    <Compile Include="Domain\IAggregateState.cs" />
     <Compile Include="Domain\IRepository.cs" />
     <Compile Include="Domain\OrderHandler.cs" />
     <Compile Include="Domain\OrderEntryType.cs" />

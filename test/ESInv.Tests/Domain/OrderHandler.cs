@@ -42,21 +42,20 @@ namespace ESInv.Tests.Domain
 				new ESInv.Messages.Money("EUR", 100M));
 
 			var _aggregate = new ESInv.Domain.OrderAggregate(
-				new ESInv.Domain.OrderState(
-					new ESInv.Messaging.IEvent[] 
-						{
-							new ESInv.Messages.OrderCreated(
-								Guid.NewGuid(),
-								_command.OrderId,
-								1,
-								new ESInv.Messages.Money("EUR", 100M),
-								new []
-									{
-										new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
-										new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
-									},
-								DateTimeOffset.Now)
-						}));
+				new ESInv.Messaging.IEvent[] 
+					{
+						new ESInv.Messages.OrderCreated(
+							Guid.NewGuid(),
+							_command.OrderId,
+							1,
+							new ESInv.Messages.Money("EUR", 100M),
+							new []
+								{
+									new ESInv.Messages.PaymentOffer(1M, new ESInv.Messages.Money("EUR", 100M)),
+									new ESInv.Messages.PaymentOffer(1.27M, new ESInv.Messages.Money("USD", 127M))
+								},
+							DateTimeOffset.Now)
+					});
 			var _repository = Substitute.For<ESInv.Domain.IRepository<ESInv.Domain.OrderAggregate>>();
 			_repository.GetById(_command.OrderId).Returns(_aggregate);
 			

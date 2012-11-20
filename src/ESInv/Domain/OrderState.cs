@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ESInv.Domain
 {
-	public class OrderState
+	public class OrderState : IAggregateState
 	{
 		private IList<OrderEntry> c_entries;
 		
@@ -15,6 +15,7 @@ namespace ESInv.Domain
 		public Money SaleValue { get; private set; }
 		public IEnumerable<PaymentOffer> Offers { get; private set; }
 		public DateTimeOffset CreationTimestamp { get; private set; }
+		public int Version { get; private set; }
 
 
 		public IEnumerable<OrderEntry> Entries { get { return this.c_entries; } }
@@ -34,6 +35,8 @@ namespace ESInv.Domain
 			ESInv.Messaging.IEvent @event)
 		{
 			((dynamic)this).When((dynamic)@event);
+
+			this.Version++;
 		}
 
 

@@ -33,7 +33,7 @@ namespace ESInv.Tests.Data
 			_order.MakePayment(
 				new ESInv.Domain.Money("EUR", 50M));
 
-			var _SUT = new ESInv.Data.OrderRepository();
+			var _SUT = new ESInv.Data.Repository<ESInv.Domain.OrderAggregate>();
 			_SUT.Save(_order);
 
 			var _retreivedOrder = _SUT.GetById(_order.Id);

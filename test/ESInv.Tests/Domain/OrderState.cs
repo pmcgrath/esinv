@@ -41,6 +41,7 @@ namespace ESInv.Tests
 				Assert.AreEqual(_expected.PaymentValue.Amount, _actual.PaymentValue.Amount);
 			}
 			Assert.AreEqual(_orderCreated.Timestamp, _SUT.CreationTimestamp);
+			Assert.AreEqual(1, _SUT.Version);
 		}
 
 
@@ -104,6 +105,7 @@ namespace ESInv.Tests
 			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPaymentsValue.Currency);
 			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(1, _SUT.Entries.Count());
+			Assert.AreEqual(2, _SUT.Version);
 		}
 
 
@@ -134,6 +136,7 @@ namespace ESInv.Tests
 			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPaymentsValue.Currency);
 			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(1, _SUT.Entries.Count());
+			Assert.AreEqual(2, _SUT.Version);
 		}
 
 
@@ -164,6 +167,7 @@ namespace ESInv.Tests
 			Assert.AreEqual(_orderPaymentMade.Value.Currency, _SUT.NetPaymentsValue.Currency);
 			Assert.AreEqual(_orderPaymentMade.Value.Amount, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(1, _SUT.Entries.Count());
+			Assert.AreEqual(2, _SUT.Version);
 		}
 
 
@@ -198,6 +202,7 @@ namespace ESInv.Tests
 			Assert.AreEqual(_orderPayment1Made.Value.Currency, _SUT.NetPaymentsValue.Currency);
 			Assert.AreEqual(_orderPayment1Made.Value.Amount + _orderPayment2Made.Value.Amount, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(2, _SUT.Entries.Count());
+			Assert.AreEqual(3, _SUT.Version);
 		}
 
 
@@ -232,6 +237,7 @@ namespace ESInv.Tests
 			Assert.AreEqual("USD", _SUT.NetPaymentsValue.Currency);
 			Assert.AreEqual(7M, _SUT.NetPaymentsValue.Amount);
 			Assert.AreEqual(2, _SUT.Entries.Count());
+			Assert.AreEqual(3, _SUT.Version);
 		}
 
 
