@@ -50,7 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\EventStore\Descriptor.cs" />
     <Compile Include="Data\EventStore\IStore.cs" />
     <Compile Include="Data\EventStore\Store.cs" />
     <Compile Include="Data\Repository.cs">

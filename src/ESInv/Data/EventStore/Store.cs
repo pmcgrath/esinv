@@ -17,13 +17,16 @@ namespace ESInv.Data.EventStore
 		public IEnumerable<ESInv.Messaging.IEvent> GetAll(
 			string eventStream)
 		{
-			using (var _connection = new EventStoreConnection(this.c_tcpEndPoint))
+			using (var _connection = EventStoreConnection.Create())
 			{
-				var _eventStreamEventsSlice = _connection.ReadEventStreamForward(eventStream, 0, int.MaxValue);
+				_connection.Connect(this.c_tcpEndPoint);
+
+				var _eventStreamEventsSlice = _connection.ReadStreamEventsForward(eventStream, 0, int.MaxValue, false);
 
 				return _eventStreamEventsSlice.Events
-					.Skip(1) 
-					.Select(@event => JsonConvert.DeserializeObject(Encoding.UTF8.GetString(@event.Data), Type.GetType(@event.EventType)))
+					.Skip(1)
+					.Select(eventStoreRecordedEvent => 
+						JsonConvert.DeserializeObject(Encoding.UTF8.GetString(eventStoreRecordedEvent.Event.Data), Type.GetType(eventStoreRecordedEvent.Event.EventType)))
 					.Cast<ESInv.Messaging.IEvent>();
 			}
 		}
@@ -34,20 +37,23 @@ namespace ESInv.Data.EventStore
 			int expectedVersion,
 			IEnumerable<ESInv.Messaging.IEvent> events)
 		{
-			using (var _connection = new EventStoreConnection(this.c_tcpEndPoint))
+			using (var _connection = EventStoreConnection.Create())
 			{
-				var _eventStoreDescriptors = events
+				_connection.Connect(this.c_tcpEndPoint);
+
+				var _eventStoreEventDataItems = events
 					.Select(change =>
-						new EventStoreDescriptor(
-							Guid.NewGuid(),
-							change.GetType().FullName,
- 							Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(change)),
-							null))
+						new EventData(
+							eventId: Guid.NewGuid(),
+							type: change.GetType().FullName,
+ 							data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(change)),
+							isJson: true,
+							metadata: null))
 					.ToArray();
 
 				if (expectedVersion <= 0) { expectedVersion = ExpectedVersion.Any; }
 
-				_connection.AppendToStream(eventStream, expectedVersion, _eventStoreDescriptors);
+				_connection.AppendToStream(eventStream, expectedVersion, _eventStoreEventDataItems);
 			}
 		}
 	}

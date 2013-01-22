@@ -2,10 +2,18 @@ esinv
 =====
 Event souring investigation  
 This is a mickey mouse sample just copies content from the following  
+
 https://github.com/gregoryyoung/m-r  
+http://beingtheworst.com/  
+https://github.com/beingtheworst/btw-samples  
 Lokad  
 http://msdn.microsoft.com/en-us/library/jj554200.aspx  
 http://channel9.msdn.com/Events/aspConf/aspConf/CQRS-with-ASP-NET-MVC-A-Year-On  
+
+
+Running UTs
+===========
+Need to run a server see test\esinv.tests\readme.txt
 
 
 Issues
